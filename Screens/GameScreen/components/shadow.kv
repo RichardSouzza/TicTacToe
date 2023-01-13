@@ -1,0 +1,29 @@
+<Shadow>:
+    id: shadow
+    md_bg_color: 0, 0, 0, .8
+    opacity: 0
+    
+    MDLabel:
+        id: win_label
+        font_size: "70sp"
+        font_name: "assets/font/VarelaRound-Regular.ttf"
+        color: app.theme.bg_color
+        markup: True
+        opacity: 0
+        halign: "center"
+        pos_hint: {"center_y": .5}
+    
+    MDLabel:
+        id: play_label
+        text: "Tap to play again"
+        font_size: "16sp"
+        font_name: "assets/font/VarelaRound-Regular.ttf"
+        color: app.theme.bg_color
+        opacity: 0
+        halign: "center"
+        pos_hint: {"center_y": .2}
+    
+    MDFlatButton:
+        size_hint: 1, 1
+        ripple_scale: 0
+        on_release: app.root.current_screen.restart()

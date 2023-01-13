@@ -1,0 +1,56 @@
+<SettingsScreen>:
+    
+    BackButton:
+    
+    MDLabel:
+        text: "Settings"
+        font_size: "40sp"
+        font_name: "assets/font/VarelaRound-Regular.ttf"
+        color: app.theme.primary_color
+        pos_hint: {"center_y": .8}
+        halign: "center"
+    
+    MDBoxLayout:
+        orientation: "vertical"
+        size_hint: .6, None
+        spacing: "46dp"
+        pos_hint: {"center_x": .5, "center_y": .5}
+        
+        MDLabel:
+            text: "Board Size"
+            font_size: "20sp"
+            font_name: "assets/font/VarelaRound-Regular.ttf"
+            color: app.theme.primary_color
+            halign: "center"
+        
+        MDBoxLayout:
+            
+            MDLabel:
+                text: str(slider.min)
+                font_size: "16sp"
+                font_name: "assets/font/VarelaRound-Regular.ttf"
+                color: app.theme.primary_color
+                halign: "center"
+                size_hint_x: None
+            
+            MDSlider:
+                id: slider
+                color: app.theme.primary_color
+                hint_text_color: app.theme.primary_color
+                thumb_color_active: app.theme.primary_dark
+                thumb_color_inactive: app.theme.primary_color
+                track_color_active: app.theme.primary_light
+                track_color_inactive: app.theme.primary_light
+                min: 3
+                max: 15
+                step: 1
+                value: 3
+                on_touch_up: root.set_board_size(self.value)
+            
+            MDLabel:
+                text: str(slider.max)
+                font_size: "16sp"
+                font_name: "assets/font/VarelaRound-Regular.ttf"
+                color: app.theme.primary_color
+                halign: "center"
+                size_hint_x: None

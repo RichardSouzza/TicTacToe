@@ -1,0 +1,23 @@
+<TextButton>:
+    size_hint_y: None
+    padding: 0, "6dp"
+    
+    MDRelativeLayout:
+        
+        MDFlatButton:
+            size_hint: None, None
+            width: root.ids.label.width
+            height: root.height
+            pos_hint: {"center_y": .5}
+            md_bg_color: app.theme.bg_color
+            ripple_scale: 0
+            on_release: app.root.change_screen(root.link)
+        
+        MDLabel:
+            id: label
+            text: root.text
+            font_size: "24sp"
+            font_name: "assets/font/VarelaRound-Regular.ttf"
+            color: app.theme.primary_color
+            halign: "center"
+        

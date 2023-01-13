@@ -1,0 +1,33 @@
+<GameScreen>:
+    
+    BackButton:
+        on_release: root.restart()
+    
+    MDBoxLayout:
+        id: board_box
+        size_hint:
+            ((.8, None) if root.width < root.height \
+            else (None, .8))
+        height: self.width
+        pos_hint: {"center_x": .5, "center_y": .5}
+        
+        MDGridLayout:
+            id: board
+            spacing: "12dp"
+            md_bg_color: app.theme.primary_dark
+            cols: root.board_size
+            col_default_width: self.width / self.cols - self.spacing[0]
+            row_default_height: self.height / self.cols  - self.spacing[1]
+
+    
+    MDLabel:
+        id: cp_label
+        font_size: "32sp"
+        font_name: "assets/font/VarelaRound-Regular.ttf"
+        color: app.theme.primary_color
+        markup: True
+        pos_hint: {"center_y": .2}
+        halign: "center"
+    
+    MDBoxLayout:
+        id: box

@@ -1,0 +1,21 @@
+<Square>:
+    md_bg_color: app.theme.bg_color
+    
+    MDFlatButton:
+        size_hint: None, None
+        size: root.size
+        md_bg_color: root.md_bg_color
+        ripple_scale: 0
+        on_release: root.mark()
+    
+    MDLabel:
+        id: label
+        text: root.text
+        font_size: root.height
+        font_name: "assets/font/VarelaRound-Regular.ttf"
+        color:
+            (app.theme.cross_color \
+            if self.text == "X" \
+            else app.theme.circle_color)
+        halign: "center"
+        pos_hint: {"center_y": .5}

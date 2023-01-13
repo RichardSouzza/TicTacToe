@@ -1,0 +1,19 @@
+<HomeScreen>:
+    
+    Image:
+        source: "assets/images/tictactoe.png"
+        size_hint_x: .7
+        pos_hint: {"center_x": .5, "center_y": .8}
+    
+    MDBoxLayout:
+        orientation: "vertical"
+        size_hint_y: None
+        pos_hint: {"top": .35}
+        
+        TextButton:
+            text: "Two Players"
+            link: "game"
+        
+        TextButton:
+            text: "Settings"
+            link: "settings"

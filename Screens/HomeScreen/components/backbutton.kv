@@ -1,0 +1,9 @@
+<BackButton>:
+    icon: "chevron-left"
+    icon_size: "40sp"
+    theme_icon_color: "Custom"
+    icon_color: app.theme.primary_color
+    pos_hint: {"center_y": .9}
+    center_x: self.width - self.padding[0] * 2
+    ripple_scale: 0
+    on_release: app.root.change_screen("home", "right")

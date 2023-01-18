@@ -13,7 +13,7 @@ package.domain = com.richardsouza.tictactoe
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-#source.include_exts =
+#source.include_exts = py,png,jpg,kv,atlas
 
 # (list) List of inclusions using pattern matching
 #source.include_patterns = assets/*,images/*.png
@@ -47,7 +47,7 @@ requirements = python3,kivy,kivymd,numpy
 #presplash.filename = %(source.dir)s/data/presplash.png
 
 # (str) Icon of the application
-#icon.filename = %(source.dir)s/data/icon.png
+icon.filename = assets/images/icon.png
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = all

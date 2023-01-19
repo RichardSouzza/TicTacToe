@@ -1,6 +1,6 @@
 # TicTacToe
 
-A TicTacToe programmed with KivyMD.
+A TicTacToe programmed with [KivyMD](https://github.com/kivymd/KivyMD).
 
 ## Screenshots
 

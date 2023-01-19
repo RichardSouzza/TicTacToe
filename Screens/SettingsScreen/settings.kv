@@ -1,6 +1,7 @@
 <SettingsScreen>:
     
     BackButton:
+        on_release: root.set_board_size()
     
     MDLabel:
         text: "Settings"
@@ -45,7 +46,6 @@
                 max: 15
                 step: 1
                 value: 3
-                on_touch_up: root.set_board_size(self.value)
             
             MDLabel:
                 text: str(slider.max)

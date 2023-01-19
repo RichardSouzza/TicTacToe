@@ -44,7 +44,7 @@ requirements = python3,kivy,kivymd,numpy
 # requirements.source.kivy = ../../kivy
 
 # (str) Presplash of the application
-presplash.filename = assets/images/tictactoe.png
+#presplash.filename = %(source.dir)s/data/presplash.png
 
 # (str) Icon of the application
 icon.filename = assets/images/icon.png

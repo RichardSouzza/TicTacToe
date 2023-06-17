@@ -48,6 +48,10 @@ class GameScreen(MDScreen):
     
     def change_player(self):
         self.check_victory()
+        print(dir(self.ids.board))
+        print(self.ids.board.top, self.ids.board.height, self.ids.board.y, self.ids.board.pos)
+        print(self.ids.cp_label.top, self.ids.cp_label.height, self.ids.cp_label.y, self.ids.cp_label.pos)
+        print(self.ids.board.y - self.ids.board.height, self.ids.cp_label.y)
         for player in self.players:
             if player != self.current_player:
                 self.current_player = player

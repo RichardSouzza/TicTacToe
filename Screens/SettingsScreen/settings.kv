@@ -32,16 +32,18 @@
                 font_name: "assets/font/VarelaRound-Regular.ttf"
                 color: app.theme.primary_color
                 halign: "center"
-                size_hint_x: None
+                size_hint_x: .2
             
             MDSlider:
                 id: slider
                 color: app.theme.primary_color
+                hint_bg_color: app.theme.bg_color
                 hint_text_color: app.theme.primary_color
                 thumb_color_active: app.theme.primary_dark
                 thumb_color_inactive: app.theme.primary_color
                 track_color_active: app.theme.primary_light
                 track_color_inactive: app.theme.primary_light
+                show_off: False
                 min: 3
                 max: 15
                 step: 1
@@ -53,4 +55,4 @@
                 font_name: "assets/font/VarelaRound-Regular.ttf"
                 color: app.theme.primary_color
                 halign: "center"
-                size_hint_x: None
+                size_hint_x: .2

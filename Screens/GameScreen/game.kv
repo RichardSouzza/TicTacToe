@@ -5,9 +5,7 @@
     
     MDBoxLayout:
         id: board_box
-        size_hint:
-            ((.8, None) if root.width < root.height \
-            else (None, .8))
+        size_hint: (.8, None) if root.width < root.height else (None, .8)
         height: self.width
         pos_hint: {"center_x": .5, "center_y": .5}
         
@@ -25,8 +23,10 @@
         font_name: "assets/font/VarelaRound-Regular.ttf"
         color: app.theme.primary_color
         markup: True
-        pos_hint: {"center_y": .2}
         halign: "center"
+        y:
+            -root.height / 2 * 0.7 if board_box.y - board_box.height > -root.height / 2 * 0.7 \
+            else -self.font_size - board_box.height / 2
     
     MDBoxLayout:
         id: box

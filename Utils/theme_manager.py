@@ -4,7 +4,6 @@ from kivy.utils import get_color_from_hex as hex
 class ThemeManager:
     def __init__(self, palette):
         self.palette = self.hex_to_color(palette)
-        
         self.bg_color = self.palette["Gray"]["200"]
         self.circle_color = self.palette["Blue"]["500"]
         self.cross_color = self.palette["Red"]["500"]

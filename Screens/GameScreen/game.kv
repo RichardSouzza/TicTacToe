@@ -13,12 +13,12 @@
             id: board
             spacing: "12dp"
             md_bg_color: app.theme.primary_dark
-            cols: root.board_size
+            cols: 3
             col_default_width: self.width / self.cols - self.spacing[0]
             row_default_height: self.height / self.cols  - self.spacing[1]
     
     MDLabel:
-        id: cp_label
+        id: current_player_label
         font_size: "32sp"
         font_name: "assets/font/VarelaRound-Regular.ttf"
         color: app.theme.primary_color

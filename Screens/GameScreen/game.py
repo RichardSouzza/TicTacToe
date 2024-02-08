@@ -5,10 +5,10 @@ from kivy.clock import Clock
 from kivy.metrics import dp
 from kivy.utils import get_hex_from_color
 
-import numpy as np
 from Screens.GameScreen.components.line import Line
 from Screens.GameScreen.components.shadow import Shadow
 from Screens.GameScreen.components.square import Square
+from Utils.config import get_config
 
 
 class GameScreen(MDScreen):
@@ -16,77 +16,130 @@ class GameScreen(MDScreen):
         super(GameScreen, self).__init__(**kwargs)
         self.app = MDApp.get_running_app()
         self.players = ["X", "O"]
-        self.current_player = self.players[0]
-        self.board_size = 3
         Clock.schedule_once(self.build)
     
-    def build(self, *args, **kwargs):
-        try:
-            self.board_size = kwargs["board_size"]
-        except KeyError:
-            pass
-        
+    def build(self, *args):
+        config = get_config("board")
+        self.board_size = config["board_size"]
+        self.winning_condition = config["winning_condition"]
         self.current_player = self.players[0]
+        self.set_current_player_label()
         self.ids.board.clear_widgets()
         self.ids.board.cols = self.board_size
-        
-        for col in range(self.board_size):
-            for row in range(self.board_size):
-                self.ids.board.add_widget(Square())
-        
-        color = self.get_markup_color()
-        self.ids.cp_label.text = f"[color={color}]{self.current_player}[/color] Turn!"
-        
-        if self.board_size == 3:
-            self.marks = 3
-        elif 3 < self.board_size < 9:
-            self.marks = 4
-        elif 9 <= self.board_size < 11:
-            self.marks = 5
-        else:
-            self.marks = 6
+        self.board = []
+        self.grid = []
+
+        for row in range(self.board_size):
+            self.board.append([])
+            for col in range(self.board_size):
+                square = Square()
+                self.ids.board.add_widget(square)
+                self.board[row].append(square)
     
-    def change_player(self):
-        self.check_victory()
-        for player in self.players:
-            if player != self.current_player:
-                self.current_player = player
+    def get_row(self, x, y, length):
+        row = self.grid[y][x:x+length]
+        return row
+
+    def get_col(self, x, y, length):
+        col = [row[x] for row in self.grid[y:y+length]]
+        return col
+
+    def get_diag(self, x, y, length):
+        diag = []
+        for len in range(length):
+            try:
+                diag.append(self.grid[y][x])
+            except IndexError:
                 break
-        color = self.get_markup_color()
-        self.ids.cp_label.text = f"[color={color}]{self.current_player}[/color] Turn!"
+            x += 1
+            y += 1
+        return diag
     
+    def get_anti_diag(self, x, y, length):
+        anti_diag = []
+        len = 0
+        while len <= length and y >= 0:
+            try:
+                anti_diag.append(self.grid[y][x])
+            except IndexError:
+                break
+            x += 1
+            y -= 1
+        return anti_diag
+
     def check_victory(self):
-        def get_text_from_array(array):
-            return "".join([square.text for square in array])
+        winning_combination = [self.current_player * self.winning_condition]
+        check_combination = lambda combination : combination in winning_combination
+        winning_lines = []
         
-        def victory_check(line):
-            return "X" * self.marks in line or "O" * self.marks in line
+        for row in range(self.board_size):
+            for col in range(self.board_size):
+                row_line = col_line = diag_line = anti_diag_line = None
+
+                if self.board_size - self.winning_condition >= col:
+                    row_line = "".join(self.get_row(col, row, self.winning_condition))
+                if self.board_size - self.winning_condition >= row:
+                    col_line = "".join(self.get_col(col, row, self.winning_condition))
+                if row_line and col_line:
+                    diag_line = "".join(self.get_diag(col, row, self.winning_condition))
+                if row >= self.winning_condition - 1 and row_line:
+                    anti_diag_line = "".join(self.get_anti_diag(col, row, self.winning_condition))
+
+                if check_combination(row_line): 
+                    winning_lines.append((
+                        col, row,
+                        col + self.winning_condition - 1, row
+                    ))
+                if check_combination(col_line): 
+                    winning_lines.append((
+                        col, row,
+                        col, row + self.winning_condition - 1
+                    ))
+                if check_combination(diag_line): 
+                    winning_lines.append((
+                        col, row,
+                        col + self.winning_condition - 1, row + self.winning_condition - 1
+                    ))
+                if check_combination(anti_diag_line):
+                    winning_lines.append((
+                        col, row,
+                        col + self.winning_condition - 1, row - self.winning_condition + 1
+                    ))
         
-        squares_list = [square for square in self.squares()]
-        grid = self.get_grid(squares_list)
-        
-        for col in grid.T:
-            line = get_text_from_array(col)
-            if victory_check(line):
-                self.victory("vertical", col)
-        
-        for row in grid:
-            line = get_text_from_array(row)
-            if victory_check(line):
-                self.victory("horizontal", row)
-        
-        for diagonal in self.get_diagonals(grid):
-            if victory_check(get_text_from_array(diagonal)):
-                self.victory("diagonal1", diagonal)
-        
-        for diagonal in self.get_diagonals(np.fliplr(grid)):
-            if victory_check(get_text_from_array(diagonal)):
-                self.victory("diagonal2", diagonal)
-        
-        if (" " not in get_text_from_array(grid.ravel()) and
-            Shadow not in [type(widget) for widget in self.walk()]):
+        if any(winning_lines):
+            for line in winning_lines:
+                self.victory(line)
+        elif " " not in sum(self.grid, []):
             self.draw()
     
+    def set_grid(self):
+        self.grid = []
+        for y, row in enumerate(self.board):
+            self.grid.append([])
+            for square in row:
+                self.grid[y].append(square.text)
+    
+    def turn_handler(self):
+        self.set_grid()
+        self.check_victory()
+        self.current_player = self.players[
+            (self.players.index(self.current_player) + 1) % len(self.players)]
+        self.set_current_player_label()
+
+    def set_current_player_label(self):
+        color = self.get_markup_color()
+        self.ids.current_player_label.text = f"[color={color}]{self.current_player}[/color] Turn!"
+
+    def get_markup_color(self):
+        markup_colors = {
+            "X": self.app.theme.cross_color,
+            "O": self.app.theme.circle_color,
+        }
+        return get_hex_from_color(markup_colors[self.current_player])
+    
+    def get_square_coordinates(self, square):
+        return square.center_x, square.center_y
+
     def draw(self):
         shadow = Shadow()
         shadow.ids.win_label.text = "Draw!"
@@ -107,98 +160,42 @@ class GameScreen(MDScreen):
         animation1.bind(on_complete=lambda *args: animation2.start(shadow.ids.win_label))
         animation1.bind(on_complete=lambda *args: animation2.start(shadow.ids.play_label))
         animation1.start(shadow)
-        animation3.start(self.ids.cp_label)
+        animation3.start(self.ids.current_player_label)
     
-    def get_diagonals(self, grid):
-        count = self.board_size * -1 +1
-        while count < self.board_size:
-            yield grid.diagonal(offset=count)
-            count += 1
-    
-    def get_grid(self, squares_list):
-        cols = self.board_size
-        rows = self.board_size
-        index = 0
-        grid = [[] for row in range(rows)]
-        for count, square in enumerate(squares_list):
-            grid[index].append(square)
-            if count + 1 == cols * (index + 1):
-                index += 1
-        grid = np.array(grid)
-        return grid
-    
-    def get_markup_color(self):
-        if self.current_player == "X":
-            return get_hex_from_color(self.app.theme.cross_color)
-        else:
-            return get_hex_from_color(self.app.theme.circle_color)
-    
-    @staticmethod
-    def remove_spaces(list):
-        return [item for item in list if item != " "]
-    
-    def restart(self):
-        def clear_screen():
-            for widget in self.walk():
-                if type(widget) == Square:
-                    widget.text = " "
-                    widget.ids.label.opacity = 1
-                
-                elif type(widget) in (Line, Shadow):
-                    self.remove_widget(widget)
-        
-        animation = Animation(
-            opacity=0,
-            duration=.3
-        )
-        
-        self.ids.cp_label.opacity = 1
-        callback = animation.bind(on_complete=lambda *args: clear_screen())
-        
-        for widget in self.walk():
-            if type(widget) == Square:
-                animation.start(widget.ids.label)
-            elif type(widget) in (Line, Shadow):
-                animation.start(widget)
-    
-    def squares(self):
-        for widget in self.walk():
-            if type(widget) == Square:
-                yield widget
-    
-    def victory(self, direction, sequence):
-        # Remove empty squares:
-        sequence = [square for square in sequence if square.text != " "]
-        
-        # Draw line:
-        x1, y1 = sequence[0].center_x, sequence[0].center_y
-        x2, y2 = sequence[-1].center_x, sequence[-1].center_y
+    def victory(self, line):
+        lx1, ly1, lx2, ly2 = line
+        start = self.board[ly1][lx1]
+        end = self.board[ly2][lx2]
+        x1, y1 = self.get_square_coordinates(start)
+        x2, y2 = self.get_square_coordinates(end)
         increment_x = self.ids.board.col_default_width / 2
         increment_y = self.ids.board.row_default_height / 2
-        
-        if direction == "horizontal":
+
+        if ly1 == ly2:
             x1 -= increment_x
             x2 += increment_x
         
-        elif direction == "vertical":
+        elif lx1 == lx2:
             y1 += increment_y
             y2 -= increment_y
         
-        elif direction == "diagonal1":
+        elif lx1 == ly1 and lx2 == ly2:
             x1 -= increment_x
             x2 += increment_x
             y1 += increment_y
             y2 -= increment_y
         
-        elif direction == "diagonal2":
-            x1 += increment_x
-            x2 -= increment_x
-            y1 += increment_y
-            y2 -= increment_y
+        elif lx1 == ly2 and ly1 == lx2:
+            x1 -= increment_x
+            x2 += increment_x
+            y1 -= increment_y
+            y2 += increment_y
+            x1, x2 = x2, x1
+            y1, y2 = y2, y1
         
         line = Line(
             coordinates=[x1, y1, x1, y1],
-            _width=dp(10) / self.board_size * 3
+            _width=dp(8) / self.board_size * 3
         )
         
         self.ids.box.add_widget(line)
@@ -232,4 +229,28 @@ class GameScreen(MDScreen):
             animation2.bind(on_complete=lambda *args: animation3.start(shadow.ids.win_label))
             animation2.bind(on_complete=lambda *args: animation3.start(shadow.ids.play_label))
             animation2.start(shadow)
-            animation4.start(self.ids.cp_label)
+            animation4.start(self.ids.current_player_label)
+    
+    def restart(self):
+        def clear_screen():
+            for widget in self.walk():
+                if type(widget) == Square:
+                    widget.text = " "
+                    widget.ids.label.opacity = 1
+                
+                elif type(widget) in (Line, Shadow):
+                    self.remove_widget(widget)
+        
+        animation = Animation(
+            opacity=0,
+            duration=.3
+        )
+        
+        self.ids.current_player_label.opacity = 1
+        callback = animation.bind(on_complete=lambda *args: clear_screen())
+        
+        for widget in self.walk():
+            if type(widget) == Square:
+                animation.start(widget.ids.label)
+            elif type(widget) in (Line, Shadow):
+                animation.start(widget)

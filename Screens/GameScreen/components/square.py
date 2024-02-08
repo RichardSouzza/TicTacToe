@@ -14,4 +14,4 @@ class Square(MDRelativeLayout):
         if self.text == " ":
             root = self.app.root.current_screen
             self.text = root.current_player
-            root.change_player()
+            root.turn_handler()

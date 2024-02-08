@@ -1,0 +1,7 @@
+[app]
+width = 400
+height = 600
+
+[board]
+board_size = 3
+winning_condition = 3

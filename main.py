@@ -6,6 +6,7 @@ from Screens.GameScreen.game import GameScreen
 from Screens.HomeScreen.home import HomeScreen
 from Screens.RootScreen.root import RootScreen
 from Screens.SettingsScreen.settings import SettingsScreen
+from Utils.config import get_config
 from Utils.theme_manager import ThemeManager
 
 
@@ -15,7 +16,9 @@ class TicTacToe(MDApp):
         self.load_all_kv_files("Screens")
         self.theme = ThemeManager(colors)
         if platform in ["win", "linux", "macosx"]:
-            Window.size = (400, 600)
+            config = get_config("app")
+            width, height  = config["width"], config["height"]
+            Window.size = (width, height)
         return RootScreen()
 
 
